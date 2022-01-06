@@ -1,8 +1,9 @@
 package main
 
 import (
-    block "centipede/pkg/block"
     "fmt"
+    
+    "centipede/pkg/block"
 )
 
 func main() {
