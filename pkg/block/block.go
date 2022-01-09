@@ -1,9 +1,12 @@
 package block
 
 import (
+    "bytes"
 	"crypto/sha256"
+    "encoding/gob"
 	"encoding/hex"
 	"fmt"
+    "os"
 )
 
 type Block struct {
@@ -51,4 +54,37 @@ func calculateHash(b *Block) string {
     h.Write([]byte(rec))
     hash := h.Sum(nil)
     return hex.EncodeToString(hash)
+}
+
+func DeserializeBlockchain(blockchainBytes []byte) *Block {
+    buff := bytes.NewBuffer(blockchainBytes)
+    dec := gob.NewDecoder(buff)
+
+    var block Block
+    err := dec.Decode(&block)
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "[ERROR] Cannot decode block bytes")
+    }
+
+    return &block
+}
+
+func (b *Block) SerializeBlockchain() []byte {
+    var buffBytes []byte
+    var res []byte
+    buff := bytes.NewBuffer(buffBytes)
+    enc := gob.NewEncoder(buff)
+    curr := b
+
+    for ; curr != nil ; {
+        err := enc.Encode(*curr)
+        if err != nil {
+            fmt.Fprintf(os.Stderr, "[ERROR] Couldn't serialize block into bytes")
+            return nil
+        }
+        res = buff.Bytes()
+        curr = curr.PrevBlock
+    }
+
+    return res 
 }
