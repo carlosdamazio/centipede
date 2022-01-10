@@ -6,7 +6,6 @@ import (
     "encoding/gob"
 	"encoding/hex"
 	"fmt"
-    "os"
 )
 
 type Block struct {
@@ -56,20 +55,20 @@ func calculateHash(b *Block) string {
     return hex.EncodeToString(hash)
 }
 
-func DeserializeBlockchain(blockchainBytes []byte) *Block {
+func DeserializeBlockchain(blockchainBytes []byte) (*Block, error) {
     buff := bytes.NewBuffer(blockchainBytes)
     dec := gob.NewDecoder(buff)
 
     var block Block
     err := dec.Decode(&block)
     if err != nil {
-        fmt.Fprintf(os.Stderr, "[ERROR] Cannot decode block bytes")
+        return nil, err
     }
 
-    return &block
+    return &block, nil
 }
 
-func (b *Block) SerializeBlockchain() []byte {
+func (b *Block) SerializeBlockchain() ([]byte, error){
     var buffBytes []byte
     var res []byte
     buff := bytes.NewBuffer(buffBytes)
@@ -79,12 +78,11 @@ func (b *Block) SerializeBlockchain() []byte {
     for ; curr != nil ; {
         err := enc.Encode(*curr)
         if err != nil {
-            fmt.Fprintf(os.Stderr, "[ERROR] Couldn't serialize block into bytes")
-            return nil
+            return nil, err 
         }
         res = buff.Bytes()
         curr = curr.PrevBlock
     }
 
-    return res 
+    return res, nil 
 }

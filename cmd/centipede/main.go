@@ -1,12 +1,20 @@
 package main
 
 import (
-    "centipede/pkg/block"
+    "fmt"
+    "os"
+
+    "centipede/pkg/persistence"
 )
 
 func main() {
-    blk := block.GenesisBlock("This is the start of the blockchain")
-    blk = blk.NewBlock("Hey there! This is a new block!")
-    data := blk.SerializeBlockchain()
-    blk = block.DeserializeBlockchain(data)
+    blk, err := persistence.ReadBlockchain("centipede.dat")
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "[ERROR] %s\n", err.Error())
+        os.Exit(1)
+    }
+
+    fmt.Println(blk.Data)
+    fmt.Println(blk.Hash)
+    fmt.Println(blk.Index)
 }
