@@ -1,10 +1,11 @@
 package persistence
 
 import (
-    "fmt"
-    "os"
+	"fmt"
+	"log"
+	"os"
 
-    "centipede/pkg/block"
+	"github.com/carlosdamazio/centipede/pkg/block"
 )
 
 func PersistBlockchain(lastBlock *block.Block) error {
@@ -15,14 +16,12 @@ func PersistBlockchain(lastBlock *block.Block) error {
 
     file, err := os.Create("centipede.dat")
     if err != nil {
-        fmt.Fprintf(os.Stderr, err.Error()) 
         return err
     }
 
     file.Write(data)
     err = file.Close()
     if err != nil {
-        fmt.Fprintf(os.Stderr, err.Error())
         return err
     }
 

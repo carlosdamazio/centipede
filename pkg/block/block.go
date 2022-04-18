@@ -6,25 +6,28 @@ import (
     "encoding/gob"
 	"encoding/hex"
 	"fmt"
+
+    "github.com/carlosdamazio/centipede/pkg/contract"
 )
 
 type Block struct {
     Index     int
     Data      string
     Hash      string
-    PrevBlock *Block 
+    PrevBlock *Block
+    Contract  *contract.SmartContract
 }
 
 // Creates new block from the given head
-func (b *Block) NewBlock(data string) *Block {
-    block := Block{b.Index + 1, data, "", b}
+func (b *Block) NewBlock(data string, contract *contract.SmartContract) *Block {
+    block := Block{b.Index + 1, data, "", b, contract}
     block.Hash = calculateHash(b)
     return &block
 }
 
 // Generates the genesis block
 func GenesisBlock(data string) *Block {
-    block := Block{0, data, "", nil}
+    block := Block{0, data, "", nil, nil}
     block.Hash = calculateHash(&block)
     return &block
 }
